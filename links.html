@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Michael — Photography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --border: #2a2a2a;
+    --text: #e8e4df;
+    --text-dim: #8a8580;
+    --accent: #c4a882;
+    --accent-glow: rgba(196, 168, 130, 0.12);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 2rem 1.5rem;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 380px;
+    animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header { text-align: center; margin-bottom: 2.5rem; }
+
+  .avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    margin: 0 auto 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .avatar svg { width: 36px; height: 36px; opacity: 0.5; }
+
+  .name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 1.75rem;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+  }
+
+  .tagline {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .links { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .link-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-glow);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .link-btn:hover, .link-btn:active {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .link-btn:hover::after, .link-btn:active::after { opacity: 1; }
+
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .link-icon svg { width: 20px; height: 20px; }
+
+  .link-icon.ig {
+    background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  }
+  .link-icon.ig svg { fill: #fff; }
+
+  .link-icon.fl { background: #0063dc; }
+  .link-icon.fl svg { fill: #fff; }
+
+  .link-text { flex: 1; min-width: 0; }
+
+  .link-label {
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-bottom: 0.1rem;
+  }
+
+  .link-handle {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  .link-arrow {
+    color: var(--text-dim);
+    transition: color 0.25s ease, transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .link-btn:hover .link-arrow, .link-btn:active .link-arrow {
+    color: var(--accent);
+    transform: translateX(2px);
+  }
+
+  /* ---- QR overlay ---- */
+  .qr-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--bg);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .qr-overlay.visible { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .qr-overlay canvas {
+    border-radius: 16px;
+    background: #fff;
+  }
+
+  .qr-url {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .qr-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ---- footer ---- */
+  .footer {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .footer-text {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    opacity: 0.5;
+  }
+
+  .qr-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 0.75rem;
+    font-family: inherit;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .qr-toggle:hover, .qr-toggle:active { border-color: var(--accent); }
+  .qr-toggle svg { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="avatar">
+      <!-- Replace with <img src="your-photo.jpg" alt="" style="width:100%;height:100%;object-fit:cover"> -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+    </div>
+    <h1 class="name">Michael</h1>
+    <p class="tagline">Travel &amp; Photography</p>
+  </div>
+
+  <div class="links">
+        <!-- TODO: Replace href and ID with your actual Flickr -->
+    <a href="https://flickr.com/photos/203743465@N03" target="_blank" rel="noopener" class="link-btn">
+      <div class="link-icon fl">
+        <svg viewBox="0 0 24 24"><circle cx="7" cy="12" r="5" fill="#0063dc"/><circle cx="17" cy="12" r="5" fill="#ff0084"/></svg>
+      </div>
+      <div class="link-text">
+        <div class="link-label">Photography</div>
+        <div class="link-handle">Full galleries &amp; albums</div>
+      </div>
+      <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <!-- TODO: Replace href and @handle with your actual Instagram -->
+    <a href="https://instagram.com/bespalovmichael" target="_blank" rel="noopener" class="link-btn">
+      <div class="link-icon ig">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </div>
+      <div class="link-text">
+        <div class="link-label">Instagram</div>
+        <div class="link-handle">@bespalovmichael</div>
+      </div>
+      <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    
+    <!-- LINE -->
+    <a href="https://line.me/ti/p/michael1812b" target="_blank" rel="noopener" class="link-btn">
+      <div class="link-icon" style="background: #06C755;">
+        <svg viewBox="0 0 24 24" fill="#fff" width="20" height="20"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.18 3.58 7.68 8.44 8.36.33.07.77.22.88.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.02.89.56.94-.4 5.08-2.99 6.93-5.12C21.05 14.27 22 12.47 22 10.5 22 5.83 17.52 2 12 2z"/></svg>
+      </div>
+      <div class="link-text">
+        <div class="link-label">LINE</div>
+        <div class="link-handle">Chat with me</div>
+      </div>
+      <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">Currently somewhere in Asia · 2026</div>
+    <button class="qr-toggle" id="showQR" aria-label="Show QR code">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/>
+        <rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4" rx="0.5"/>
+        <line x1="22" y1="14" x2="22" y2="18"/><line x1="18" y1="22" x2="22" y2="22"/>
+      </svg>
+      Show QR
+    </button>
+  </div>
+</div>
+
+<!-- QR fullscreen overlay -->
+<div class="qr-overlay" id="qrOverlay">
+  <button class="qr-close" id="closeQR" aria-label="Close QR code">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <canvas id="qrCanvas"></canvas>
+  <div class="qr-url" id="qrUrlLabel"></div>
+</div>
+
+<script>
+// ===== CONFIG =====
+// TODO: Change this to your actual hosted URL
+const PAGE_URL = "https://mich8bsp.github.io/links";
+
+// Toggle QR overlay
+const showBtn = document.getElementById('showQR');
+const closeBtn = document.getElementById('closeQR');
+const overlay = document.getElementById('qrOverlay');
+const urlLabel = document.getElementById('qrUrlLabel');
+let qrGenerated = false;
+
+showBtn.addEventListener('click', () => {
+  overlay.classList.add('visible');
+  if (!qrGenerated) { generateQR(); qrGenerated = true; }
+});
+closeBtn.addEventListener('click', () => overlay.classList.remove('visible'));
+overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('visible'); });
+
+// Auto-show if ?qr in URL
+if (window.location.search.includes('qr')) {
+  overlay.classList.add('visible');
+  requestAnimationFrame(() => { generateQR(); qrGenerated = true; });
+}
+
+function generateQR() {
+  urlLabel.textContent = PAGE_URL;
+  const canvas = document.getElementById('qrCanvas');
+  const ctx = canvas.getContext('2d');
+  const matrix = QRCode.generate(PAGE_URL);
+  const modCount = matrix.length;
+  const cellSize = 8;
+  const padding = 3;
+  const size = (modCount + padding * 2) * cellSize;
+
+  canvas.width = size;
+  canvas.height = size;
+  canvas.style.width = Math.min(size, 260) + 'px';
+  canvas.style.height = Math.min(size, 260) + 'px';
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.fillStyle = '#0e0e0e';
+  for (let r = 0; r < modCount; r++) {
+    for (let c = 0; c < modCount; c++) {
+      if (matrix[r][c]) {
+        ctx.fillRect((c + padding) * cellSize, (r + padding) * cellSize, cellSize, cellSize);
+      }
+    }
+  }
+}
+
+// ============================================================
+//  Minimal QR Code generator — byte mode, ECC-L, version 1-10
+//  Zero dependencies, ~3KB
+// ============================================================
+const QRCode = (() => {
+  const VERSION_TABLE = [
+    null,
+    [1,26,7,1],[2,44,10,1],[3,70,15,1],[4,100,20,1],[5,134,26,1],
+    [6,172,18,2],[7,196,20,2],[8,242,24,2],[9,292,30,2],[10,346,18,2],
+  ];
+
+  function getVersionForLength(len) {
+    for (let v = 1; v <= 10; v++) {
+      const [, total, ecPerBlock, blocks] = VERSION_TABLE[v];
+      const dataCodewords = total - ecPerBlock * blocks;
+      const countBits = v <= 9 ? 8 : 16;
+      const needed = 4 + countBits + len * 8;
+      if (needed <= dataCodewords * 8) return v;
+    }
+    return 10;
+  }
+
+  function generate(text) {
+    const data = new TextEncoder().encode(text);
+    const version = getVersionForLength(data.length);
+    const [, totalCodewords, ecPerBlock, numBlocks] = VERSION_TABLE[version];
+    const dataCodewords = totalCodewords - ecPerBlock * numBlocks;
+    const size = version * 4 + 17;
+
+    const bits = [];
+    const pushBits = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >> i) & 1); };
+
+    pushBits(0b0100, 4);
+    pushBits(data.length, version <= 9 ? 8 : 16);
+    for (const b of data) pushBits(b, 8);
+    const capacity = dataCodewords * 8;
+    pushBits(0, Math.min(4, capacity - bits.length));
+    while (bits.length % 8 !== 0) bits.push(0);
+    const padBytes = [0xEC, 0x11];
+    let pi = 0;
+    while (bits.length < capacity) { pushBits(padBytes[pi++ % 2], 8); }
+
+    const codewords = [];
+    for (let i = 0; i < bits.length; i += 8) {
+      let byte = 0;
+      for (let j = 0; j < 8; j++) byte = (byte << 1) | (bits[i + j] || 0);
+      codewords.push(byte);
+    }
+
+    const ecCW = computeEC(codewords, ecPerBlock, numBlocks, dataCodewords);
+
+    const dataPerBlock = Math.floor(dataCodewords / numBlocks);
+    const extraBlocks = dataCodewords % numBlocks;
+    const blocks = [];
+    let offset = 0;
+    for (let b = 0; b < numBlocks; b++) {
+      const blockLen = dataPerBlock + (b >= numBlocks - extraBlocks ? 1 : 0);
+      blocks.push(codewords.slice(offset, offset + blockLen));
+      offset += blockLen;
+    }
+
+    const interleaved = [];
+    const maxDataLen = dataPerBlock + (extraBlocks > 0 ? 1 : 0);
+    for (let i = 0; i < maxDataLen; i++) {
+      for (const block of blocks) { if (i < block.length) interleaved.push(block[i]); }
+    }
+    for (let i = 0; i < ecPerBlock; i++) {
+      for (const ec of ecCW) { if (i < ec.length) interleaved.push(ec[i]); }
+    }
+
+    const matrix = Array.from({ length: size }, () => Array(size).fill(null));
+    const reserved = Array.from({ length: size }, () => Array(size).fill(false));
+
+    placeFinder(matrix, reserved, 0, 0, size);
+    placeFinder(matrix, reserved, size - 7, 0, size);
+    placeFinder(matrix, reserved, 0, size - 7, size);
+
+    for (let i = 8; i < size - 8; i++) {
+      if (!reserved[6][i]) { matrix[6][i] = i % 2 === 0; reserved[6][i] = true; }
+      if (!reserved[i][6]) { matrix[i][6] = i % 2 === 0; reserved[i][6] = true; }
+    }
+
+    if (version >= 2) {
+      const positions = getAlignmentPositions(version);
+      for (const r of positions) {
+        for (const c of positions) {
+          if (reserved[r] && reserved[r][c]) continue;
+          placeAlignment(matrix, reserved, r, c);
+        }
+      }
+    }
+
+    for (let i = 0; i < 8; i++) {
+      reserved[8][i] = true; reserved[8][size - 1 - i] = true;
+      reserved[i][8] = true; reserved[size - 1 - i][8] = true;
+    }
+    reserved[8][8] = true;
+    matrix[size - 8][8] = true;
+    reserved[size - 8][8] = true;
+
+    const allBits = [];
+    for (const cw of interleaved) for (let i = 7; i >= 0; i--) allBits.push((cw >> i) & 1);
+    const remainderBits = [0,0,7,7,7,7,7,0,0,0,0][version] || 0;
+    for (let i = 0; i < remainderBits; i++) allBits.push(0);
+
+    let bitIndex = 0;
+    let col = size - 1;
+    let goingUp = true;
+    while (col >= 0) {
+      if (col === 6) col--;
+      for (let row = 0; row < size; row++) {
+        const actualRow = goingUp ? size - 1 - row : row;
+        for (let dc = 0; dc < 2; dc++) {
+          const c = col - dc;
+          if (c < 0 || reserved[actualRow][c]) continue;
+          matrix[actualRow][c] = bitIndex < allBits.length ? allBits[bitIndex] === 1 : false;
+          bitIndex++;
+        }
+      }
+      goingUp = !goingUp;
+      col -= 2;
+    }
+
+    const masked = applyMask(matrix, reserved, size, 0);
+    writeFormatInfo(masked, size, 0);
+    return masked;
+  }
+
+  function placeFinder(matrix, reserved, row, col, size) {
+    for (let r = -1; r <= 7; r++) {
+      for (let c = -1; c <= 7; c++) {
+        const mr = row + r, mc = col + c;
+        if (mr < 0 || mr >= size || mc < 0 || mc >= size) continue;
+        const inOuter = r === 0 || r === 6 || c === 0 || c === 6;
+        const inInner = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+        const inBorder = r === -1 || r === 7 || c === -1 || c === 7;
+        matrix[mr][mc] = !inBorder && (inOuter || inInner);
+        reserved[mr][mc] = true;
+      }
+    }
+  }
+
+  function placeAlignment(matrix, reserved, centerR, centerC) {
+    for (let r = -2; r <= 2; r++) {
+      for (let c = -2; c <= 2; c++) {
+        const mr = centerR + r, mc = centerC + c;
+        if (mr < 0 || mc < 0 || mr >= matrix.length || mc >= matrix.length) continue;
+        const isEdge = Math.abs(r) === 2 || Math.abs(c) === 2;
+        const isCenter = r === 0 && c === 0;
+        matrix[mr][mc] = isEdge || isCenter;
+        reserved[mr][mc] = true;
+      }
+    }
+  }
+
+  function getAlignmentPositions(version) {
+    if (version === 1) return [];
+    const positions = [6];
+    const last = version * 4 + 10;
+    const count = Math.floor(version / 7) + 2;
+    if (count === 2) { positions.push(last); }
+    else {
+      const step = Math.ceil((last - 6) / (count - 1) / 2) * 2;
+      for (let p = last; positions.length < count; p -= step) positions.splice(1, 0, p);
+    }
+    return positions;
+  }
+
+  function applyMask(matrix, reserved, size, maskNum) {
+    const result = matrix.map(row => [...row]);
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (reserved[r][c]) continue;
+        if ((r + c) % 2 === 0) result[r][c] = !result[r][c];
+      }
+    }
+    return result;
+  }
+
+  function writeFormatInfo(matrix, size, mask) {
+    const formatBits = [0x77C4,0x72F3,0x7DAA,0x789D,0x662F,0x6318,0x6C41,0x6976];
+    const info = formatBits[mask];
+    const bits = [];
+    for (let i = 14; i >= 0; i--) bits.push((info >> i) & 1);
+    const hPos = [0,1,2,3,4,5,7,8,size-8,size-7,size-6,size-5,size-4,size-3,size-2,size-1];
+    for (let i = 0; i < 15; i++) matrix[8][hPos[i]] = bits[i] === 1;
+    const vPos = [size-1,size-2,size-3,size-4,size-5,size-6,size-7,size-8,7,5,4,3,2,1,0];
+    for (let i = 0; i < 15; i++) matrix[vPos[i]][8] = bits[i] === 1;
+  }
+
+  function computeEC(data, ecPerBlock, numBlocks, dataLen) {
+    const gfExp = new Uint8Array(512), gfLog = new Uint8Array(256);
+    let x = 1;
+    for (let i = 0; i < 255; i++) {
+      gfExp[i] = x; gfLog[x] = i;
+      x = (x << 1) ^ (x >= 128 ? 0x11D : 0);
+    }
+    for (let i = 255; i < 512; i++) gfExp[i] = gfExp[i - 255];
+    const gfMul = (a, b) => a === 0 || b === 0 ? 0 : gfExp[gfLog[a] + gfLog[b]];
+
+    let gen = [1];
+    for (let i = 0; i < ecPerBlock; i++) {
+      const next = new Uint8Array(gen.length + 1);
+      for (let j = 0; j < gen.length; j++) {
+        next[j] ^= gen[j];
+        next[j + 1] ^= gfMul(gen[j], gfExp[i]);
+      }
+      gen = next;
+    }
+
+    const dataPerBlock = Math.floor(dataLen / numBlocks);
+    const extra = dataLen % numBlocks;
+    const ecBlocks = [];
+    let off = 0;
+    for (let b = 0; b < numBlocks; b++) {
+      const blockLen = dataPerBlock + (b >= numBlocks - extra ? 1 : 0);
+      const block = data.slice(off, off + blockLen);
+      off += blockLen;
+      const work = new Uint8Array(blockLen + ecPerBlock);
+      work.set(block);
+      for (let i = 0; i < blockLen; i++) {
+        const coef = work[i];
+        if (coef !== 0) for (let j = 0; j < gen.length; j++) work[i + j] ^= gfMul(gen[j], coef);
+      }
+      ecBlocks.push(Array.from(work.slice(blockLen)));
+    }
+    return ecBlocks;
+  }
+
+  return { generate };
+})();
+</script>
+
+</body>
+</html>
